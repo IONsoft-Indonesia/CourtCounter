@@ -12,6 +12,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private ActivityMainBinding activityMainBinding;
     private GameViewModel gameViewModel;
+    private int scoreTeamA = 0;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("scoreTeamA", scoreTeamA);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,8 +32,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         gameViewModel = ViewModelProviders.of(this).get(GameViewModel.class);
 
         // start observing changes from observables and react accordingly
-        gameViewModel.getScoreTeamA().observe(this, score -> activityMainBinding.tvTeamAScore.setText(score));
-        gameViewModel.getScoreTeamB().observe(this, score -> activityMainBinding.tvTeamBScore.setText(score));
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey("scoreTeamA")) {
+                scoreTeamA = savedInstanceState.getInt("scoreTeamA");
+            }
+        }
+        activityMainBinding.tvTeamAScore.setText(scoreTeamA + "");
+        activityMainBinding.tvTeamBScore.setText(gameViewModel.getScoreTeamB());
+        // gameViewModel.getScoreTeamA().observe(this, score -> activityMainBinding.tvTeamAScore.setText(score));
+
         gameViewModel.getGameTitle().observe(this, gameTitle -> activityMainBinding.tvGameTitle.setText(gameTitle));
         gameViewModel.getTeamAName().observe(this, name -> activityMainBinding.tvTeamAName.setText(name));
         gameViewModel.getTeamBName().observe(this, name -> activityMainBinding.tvTeamBName.setText(name));
@@ -43,16 +62,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bTeamAPlus3:
-                gameViewModel.addToTeamA(3);
+                scoreTeamA += 3;
+                activityMainBinding.tvTeamAScore.setText("" + scoreTeamA);
+                // gameViewModel.addToTeamA(3);
                 break;
             case R.id.bTeamAPlus1:
-                gameViewModel.addToTeamA(1);
+                scoreTeamA += 1;
+                activityMainBinding.tvTeamAScore.setText("" + scoreTeamA);
+                // gameViewModel.addToTeamA(1);
                 break;
             case R.id.bTeamBPlus3:
                 gameViewModel.addToTeamB(3);
+                activityMainBinding.tvTeamBScore.setText(gameViewModel.getScoreTeamB());
                 break;
             case R.id.bTeamBPlus1:
                 gameViewModel.addToTeamB(1);
+                activityMainBinding.tvTeamBScore.setText(gameViewModel.getScoreTeamB());
                 break;
             case R.id.bReset:
                 gameViewModel.resetScores();

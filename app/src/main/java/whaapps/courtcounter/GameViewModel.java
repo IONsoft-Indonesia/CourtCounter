@@ -9,22 +9,20 @@ import android.arch.lifecycle.ViewModel;
  * @author hendrawd on 28/07/18
  */
 public class GameViewModel extends ViewModel {
-    private MutableLiveData<Integer> scoreTeamA;
-    private MutableLiveData<Integer> scoreTeamB;
     private MutableLiveData<String> gameTitle;
     private MutableLiveData<String> teamAName;
     private MutableLiveData<String> teamBName;
+
+    private MutableLiveData<Integer> scoreTeamA;
+    private int scoreTeamB;
+
     private LiveData<String> scoreStringTeamA;
-    private LiveData<String> scoreStringTeamB;
 
     public GameViewModel() {
         scoreTeamA = new MutableLiveData<>();
         scoreTeamA.setValue(0);
-        scoreTeamB = new MutableLiveData<>();
-        scoreTeamB.setValue(0);
         // can transform integer to string or use mutable live data directly
         scoreStringTeamA = Transformations.map(scoreTeamA, String::valueOf);
-        scoreStringTeamB = Transformations.map(scoreTeamB, String::valueOf);
 
         gameTitle = new MutableLiveData<>();
         teamAName = new MutableLiveData<>();
@@ -42,13 +40,11 @@ public class GameViewModel extends ViewModel {
     }
 
     public void addToTeamB(int amount) {
-        if (scoreTeamB.getValue() != null) {
-            scoreTeamB.setValue(scoreTeamB.getValue() + amount);
-        }
+        scoreTeamB += amount;
     }
 
-    public LiveData<String> getScoreTeamB() {
-        return scoreStringTeamB;
+    public String getScoreTeamB() {
+        return scoreTeamB + "";
     }
 
     public void setTeamAName(final String name) {
@@ -77,6 +73,6 @@ public class GameViewModel extends ViewModel {
 
     public void resetScores() {
         scoreTeamA.setValue(0);
-        scoreTeamB.setValue(0);
+        scoreTeamB = 0;
     }
 }
